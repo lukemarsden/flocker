@@ -8,7 +8,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
 
-echo "Installing ZFS from latest git HEAD"
 apt-get -y install build-essential gawk alien fakeroot linux-headers-$(uname -r) zlib1g-dev uuid-dev libblkid-dev libselinux-dev parted lsscsi dh-autoreconf linux-crashdump git
 
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E871F18B51E0147C77796AC81196BA81F6B0FC61

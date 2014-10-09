@@ -10,7 +10,11 @@ This is a just one of the prerequisites to getting Flocker_ working on CoreOS_, 
 
     This is a highly experimental proof-of-concept and should not be used for anything resembling production use cases.
 
+<<<<<<< HEAD
 The following instructions have been tested against CoreOS 423.0.0 (alpha) and CoreOS 367.1.0 (stable) and may or may not work against different versions.
+=======
+The following instructions have been tested against CoreOS 440.0.0 (alpha) and may or may not work against different versions.
+>>>>>>> aa0236ba10eb77740e83f05295d2217fb33f4952
 
 Get a CoreOS cluster
 ====================
@@ -34,6 +38,7 @@ Perform the following on each node to load the experimental ZFS kernel modules::
     # SSH to the node
     vagrant ssh core-01
     # Download our bits
+<<<<<<< HEAD
     wget https://storage.googleapis.com/experiments-clusterhq/zfs-coreos/coreos-gentoo-prefix-wip.tar.lz4.xz
     wget https://storage.googleapis.com/experiments-clusterhq/zfs-coreos/liblz4.so.0.0
     wget https://storage.googleapis.com/experiments-clusterhq/zfs-coreos/lz4c
@@ -41,6 +46,15 @@ Perform the following on each node to load the experimental ZFS kernel modules::
     chmod +x liblz4.so.0.0
     # Extract the tarball
     xzcat coreos-gentoo-prefix-wip.tar.lz4.xz | env LD_LIBRARY_PATH=. ./lz4c -d | tar x
+=======
+    wget https://storage.googleapis.com/experiments-clusterhq/zfs-coreos/coreos-gentoo-prefix-glibc-wip.tar.xz{.sig,}
+    # Import public key from signing key pair from key server:
+    gpg --recv-keys 'FD27D483' --keyserver hkp://subkeys.pgp.net
+    # Verify signature
+    gpg --verify coreos-gentoo-prefix-glibc-wip.tar.xz{.sig,}
+    # Extract the tarball
+    tar xf coreos-gentoo-prefix-glibc-wip.tar.xz
+>>>>>>> aa0236ba10eb77740e83f05295d2217fb33f4952
     # Enter Gentoo Prefix Shell
     gentoo/startprefix
     # Load modules
@@ -96,3 +110,29 @@ Come and hang out with us in ``#clusterhq`` on Freenode, or subscribe to flocker
 .. _procure: https://coreos.com/docs/#running-coreos
 .. _Vagrant: https://coreos.com/docs/running-coreos/platforms/vagrant/
 .. _flocker-users: https://groups.google.com/forum/#!forum/flocker-users
+<<<<<<< HEAD
+=======
+
+Additional documentation
+========================
+Information on how the tarball was created and how to rebuild the kernel
+modules is located in `gentoo/NOTES` inside the tarball.
+
+Licensing
+=========
+The licenses of all software included in the tarball are those under which it
+was originally published. All modifications by ClusterHQ to the software are
+released to the community under the licenses of the respective packages. The
+tarball also includes all sources of compiled components, with the sole
+exception being the absence of the kernel sources against which the ZFS kernel
+modules were built. This is because the build procedure leaves them outside of
+the `gentoo` directory. Information on how to obtain kernel sources for CoreOS
+is included in the tarball's `gentoo/NOTES` file. All documentation written by
+ClusterHQ on this topic is released to the community under the CC BY-SA 3.0
+license:
+
+https://creativecommons.org/licenses/by-sa/3.0/us/
+
+In specific, that is this document, `gentoo/NOTES`, statements in the issue
+tracker and comments in IRC.
+>>>>>>> aa0236ba10eb77740e83f05295d2217fb33f4952

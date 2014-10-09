@@ -12,4 +12,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
   end
+
+  config.vm.define "node1" do |node1|
+    node1.vm.network :private_network, :ip => "172.16.255.250"
+    node1.vm.hostname = "node1"
+  end
+
+  config.vm.define "node2" do |node2|
+    node2.vm.network :private_network, :ip => "172.16.255.251"
+    node2.vm.hostname = "node2"
+  end
 end

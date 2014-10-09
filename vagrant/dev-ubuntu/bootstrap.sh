@@ -1,49 +1,44 @@
 #!/bin/sh
 
-# This script builds the base flocker-dev box.
+# This script builds the base flocker-dev box for Ubuntu.
 
 set -e
 
-# Install useful yum repos
-yum install -y https://s3.amazonaws.com/archive.zfsonlinux.org/fedora/zfs-release$(rpm -E %dist).noarch.rpm
-curl https://copr.fedoraproject.org/coprs/tomprince/hybridlogic/repo/fedora-20-x86_64/tomprince-hybridlogic-fedora-20-x86_64.repo >/etc/yum.repos.d/hybridlogic.repo
+export DEBIAN_FRONTEND=noninteractive
 
-# Install packages
-yum install -y \
-	@buildsys-build git \
-	kernel-headers kernel-devel rpmdevtools \
-	zlib-devel libuuid-devel libselinux-devel \
-	automake autoconf libtool \
-	rpm-devel rpmlint mock createrepo \
-	docker-io \
-	python-devel python-tox python-virtualenv python-pip \
-	python-cffi libffi-devel \
-	yum-utils
+apt-get update
 
-# Enable zfs-testing repo
-yum-config-manager --enable zfs-testing
-yum install -y zfs
+echo "Installing ZFS from latest git HEAD"
+apt-get -y install build-essential gawk alien fakeroot linux-headers-$(uname -r) zlib1g-dev uuid-dev libblkid-dev libselinux-dev parted lsscsi dh-autoreconf linux-crashdump git
 
-# Flocker python dependencies
-yum install -y \
-	python-eliot \
-	python-zope-interface \
-	pytz \
-	python-characteristic \
-	python-twisted \
-	PyYAML \
-	python-treq \
-	python-netifaces \
-	python-ipaddr \
-	python-nomenclature
-# These are redundant with python-twisted
-yum install -y \
-	python-crypto \
-	python-pyasn1
-yum install -y python-flake8 python-coverage
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E871F18B51E0147C77796AC81196BA81F6B0FC61
+echo deb http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main  > /etc/apt/sources.list.d/zfs.list
 
-# Install for downloading wheelhouse
-yum install -y wget
+apt-get update
+apt-get -y install ubuntu-zfs
 
-systemctl enable docker
+mkdir -p /opt/flocker-pool
+truncate --size 1G /opt/flocker-pool/pool-vdev
+zpool create flocker /opt/flocker-pool/pool-vdev
+
+# Install pip and some other deps
+apt-get install -y python-pip python-dev libxml2-dev libxslt1-dev libssl-dev screen telnet strace exuberant-ctags apt-transport-https iotop htop util-linux
+
+# Clone flocker into /opt
+cd /opt
+git clone -b ubuntu-vagrant https://github.com/lukemarsden/flocker
+
+# Use pip to upgrade itself and install all requirements
+cd flocker
+pip install --upgrade pip
+easy_install -U distribute # An error message told me to do this :(
+/usr/local/bin/pip install -r requirements.txt
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+apt-get update
+apt-get -y install lxc-docker
+
+sed -i'backup' s/USE_KDUMP=0/USE_KDUMP=1/g /etc/default/kdump-tools
 

@@ -83,7 +83,7 @@ class ProcessNode(object):
         try:
             return check_output(
                 self.initial_command_arguments +
-                tuple(map(self._quote, remote_command)))
+                tuple(map(self._quote, remote_command)) + ("2>>/var/log/flocker-remote-zfs.log",))
         except CalledProcessError as e:
             # We should really capture this and stderr better:
             # https://clusterhq.atlassian.net/browse/FLOC-155
